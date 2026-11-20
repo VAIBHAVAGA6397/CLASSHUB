@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClassHub - Class Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #f59e0b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --bg-hover: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Background Animation */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            background: var(--bg-card);
+            border-bottom: 2px solid var(--border);
+            padding: 20px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2.5rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .user-details h3 {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .user-role {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Navigation */
+        nav {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .nav-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-btn.active {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .nav-btn .badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        /* Stats Cards */
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-info h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            opacity: 0.8;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-main);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-main);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        tr:hover {
+            background: var(--bg-hover);
+        }
+
+        /* Notification Item */
+        .notification-item {
+            background: var(--bg-main);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            transition: all 0.3s ease;
+        }
+
+        .notification-item:hover {
+            transform: translateX(5px);
+            border-left-color: var(--secondary);
+        }
+
+        .notification-item.unread {
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .notification-content h4 {
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .notification-content p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .notification-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Assignment Card */
+        .assignment-card {
+            background: var(--bg-main);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .assignment-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .assignment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .assignment-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .assignment-subject {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .assignment-due {
+            background: var(--danger);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .assignment-due.completed {
+            background: var(--success);
+        }
+
+        .assignment-description {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .assignment-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Timetable */
+        .timetable {
+            background: var(--bg-main);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .timetable-day {
+            background: var(--bg-card);
+            padding: 15px 20px;
+            font-weight: 700;
+            border-bottom: 2px solid var(--border);
+            font-size: 1.1rem;
+        }
+
+        .timetable-slot {
+            display: flex;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .timetable-slot:hover {
+            background: var(--bg-hover);
+        }
+
+        .slot-time {
+            width: 150px;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .slot-details {
+            flex: 1;
+        }
+
+        .slot-subject {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .slot-faculty {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .slot-room {
+            display: inline-block;
+            background: var(--bg-card);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-left: 10px;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-present {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-absent {
+            background: var(--danger);
+            color: white;
+        }
+
+        .badge-pending {
+            background: var(--warning);
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 2rem;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        /* Attendance Progress */
+        .attendance-progress {
+            margin-bottom: 15px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: var(--bg-main);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-gradient);
+            transition: width 0.5s ease;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 20px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .quick-action-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .quick-action-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .quick-action-text {
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            nav {
+                flex-direction: column;
+            }
+
+            .nav-btn {
+                width: 100%;
+            }
+
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .slot-time {
+                width: 100px;
+                font-size: 0.9rem;
+            }
+
+            .quick-action-btn {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">CLASSHUB</div>
+            <div class="user-info">
+                <div class="user-avatar">CR</div>
+                <div class="user-details">
+                    <h3>Rahul Sharma</h3>
+                    <div class="user-role">Class Representative - CSE 2nd Year</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <nav>
+            <button class="nav-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+            <button class="nav-btn" onclick="switchTab('notifications')">
+                🔔 Notifications
+                <span class="badge">3</span>
+            </button>
+            <button class="nav-btn" onclick="switchTab('assignments')">📝 Assignments</button>
+            <button class="nav-btn" onclick="switchTab('timetable')">📅 Timetable</button>
+            <button class="nav-btn" onclick="switchTab('attendance')">✓ Attendance</button>
+            <button class="nav-btn" onclick="switchTab('cr-tasks')">👨‍💼 CR Tasks</button>
+        </nav>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="grid-3">
+                <div class="stat-card" style="border-left-color: var(--primary);">
+                    <div class="stat-info">
+                        <h3>24</h3>
+                        <p>Pending Assignments</p>
+                    </div>
+                    <div class="stat-icon">📚</div>
+                </div>
+                <div class="stat-card" style="border-left-color: var(--success);">
+                    <div class="stat-info">
+                        <h3>87%</h3>
+                        <p>Class Attendance</p>
+                    </div>
+                    <div class="stat-icon">✓</div>
+                </div>
+                <div class="stat-card" style="border-left-color: var(--warning);">
+                    <div class="stat-info">
+                        <h3>5</h3>
+                        <p>Upcoming Events</p>
+                    </div>
+                    <div class="stat-icon">📅</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Quick Actions</h2>
+                </div>
+                <div class="quick-actions">
+                    <div class="quick-action-btn" onclick="openModal('addNotification')">
+                        <div class="quick-action-icon">📢</div>
+                        <div class="quick-action-text">Post Notification</div>
+                    </div>
+                    <div class="quick-action-btn" onclick="openModal('addAssignment')">
+                        <div class="quick-action-icon">✍️</div>
+                        <div class="quick-action-text">Add Assignment</div>
+                    </div>
+                    <div class="quick-action-btn" onclick="openModal('updateTiming')">
+                        <div class="quick-action-icon">⏰</div>
+                        <div class="quick-action-text">Update Timing</div>
+                    </div>
+                    <div class="quick-action-btn" onclick="switchTab('attendance')">
+                        <div class="quick-action-icon">📊</div>
+                        <div class="quick-action-text">Mark Attendance</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Today's Schedule</h2>
+                </div>
+                <div class="timetable">
+                    <div class="timetable-slot">
+                        <div class="slot-time">09:00 - 09:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Data Structures</div>
+                            <div class="slot-faculty">Dr. Priya Singh <span class="slot-room">Room 301</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">10:00 - 10:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Database Management</div>
+                            <div class="slot-faculty">Prof. Amit Kumar <span class="slot-room">Room 205</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">11:00 - 11:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Operating Systems</div>
+                            <div class="slot-faculty">Dr. Rajesh Verma <span class="slot-room">Room 302</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Notifications</h2>
+                    </div>
+                    <div class="notification-item unread">
+                        <div class="notification-content">
+                            <h4>Class Cancelled - Tomorrow</h4>
+                            <p>Data Structures lab cancelled due to faculty leave</p>
+                            <div class="notification-time">Posted 2 hours ago</div>
+                        </div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-content">
+                            <h4>Assignment Deadline Extended</h4>
+                            <p>DBMS Assignment deadline extended to Feb 5</p>
+                            <div class="notification-time">Posted 1 day ago</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Upcoming Deadlines</h2>
+                    </div>
+                    <div class="assignment-card">
+                        <div class="assignment-header">
+                            <div>
+                                <div class="assignment-title">OS Mini Project</div>
+                                <div class="assignment-subject">Operating Systems</div>
+                            </div>
+                            <div class="assignment-due">Due: Feb 3</div>
+                        </div>
+                    </div>
+                    <div class="assignment-card">
+                        <div class="assignment-header">
+                            <div>
+                                <div class="assignment-title">SQL Lab Assignment</div>
+                                <div class="assignment-subject">DBMS</div>
+                            </div>
+                            <div class="assignment-due">Due: Feb 5</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Tab -->
+        <div id="notifications" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">All Notifications</h2>
+                    <button class="btn btn-primary" onclick="openModal('addNotification')">+ Post New</button>
+                </div>
+
+                <div class="notification-item unread">
+                    <div class="notification-content">
+                        <h4>⚠️ Class Cancelled - Tomorrow</h4>
+                        <p>Data Structures lab scheduled for Feb 1st is cancelled due to faculty medical leave. Make-up class will be scheduled next week.</p>
+                        <div class="notification-time">Posted by CR - 2 hours ago</div>
+                    </div>
+                </div>
+
+                <div class="notification-item unread">
+                    <div class="notification-content">
+                        <h4>📅 Assignment Deadline Extended</h4>
+                        <p>DBMS Assignment submission deadline has been extended to February 5, 2026. Please ensure timely submission.</p>
+                        <div class="notification-time">Posted by CR - 1 day ago</div>
+                    </div>
+                </div>
+
+                <div class="notification-item unread">
+                    <div class="notification-content">
+                        <h4>🎉 Industrial Visit Announcement</h4>
+                        <p>Industrial visit to TCS Lucknow scheduled for Feb 10. Registration mandatory. Contact CR for details.</p>
+                        <div class="notification-time">Posted by CR - 2 days ago</div>
+                    </div>
+                </div>
+
+                <div class="notification-item">
+                    <div class="notification-content">
+                        <h4>📚 Library Books Due</h4>
+                        <p>Reminder: Library books issued in December are due for return by Feb 2. Late fees applicable after due date.</p>
+                        <div class="notification-time">Posted by CR - 3 days ago</div>
+                    </div>
+                </div>
+
+                <div class="notification-item">
+                    <div class="notification-content">
+                        <h4>⏰ Timing Change - Next Week</h4>
+                        <p>From Feb 5, morning classes will start at 8:30 AM instead of 9:00 AM. Please be punctual.</p>
+                        <div class="notification-time">Posted by CR - 4 days ago</div>
+                    </div>
+                </div>
+
+                <div class="notification-item">
+                    <div class="notification-content">
+                        <h4>🏆 Hackathon Registration Open</h4>
+                        <p>Annual college hackathon registration is now open. Team size: 3-4 members. Last date: Feb 8. Prize worth ₹50,000.</p>
+                        <div class="notification-time">Posted by CR - 5 days ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assignments Tab -->
+        <div id="assignments" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Assignments & Submissions</h2>
+                    <button class="btn btn-primary" onclick="openModal('addAssignment')">+ Add Assignment</button>
+                </div>
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-title">Mini Project PPT</div>
+                            <div class="assignment-subject">Mini Project - Engineer Nidhi Singh</div>
+                        </div>
+                        <div class="assignment-due">Due: Nov 20, 2026</div>
+                    </div>
+                    <div class="assignment-description">
+                        Complete the ppt according to the given format given to you .
+                    </div>
+                    <div class="assignment-footer">
+                        <div>
+                            <span class="badge badge-pending">15/60 Submitted</span>
+                        </div>
+                        <button class="btn btn-secondary">View Details</button>
+                    </div>
+                </div>
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-title">Database Design Project</div>
+                            <div class="assignment-subject">DBMS - Prof. Amit Kumar</div>
+                        </div>
+                        <div class="assignment-due">Due: Feb 5, 2026</div>
+                    </div>
+                    <div class="assignment-description">
+                        Design a complete database for a library management system. Include ER diagram, normalization up to 3NF, and SQL queries for all operations.
+                    </div>
+                    <div class="assignment-footer">
+                        <div>
+                            <span class="badge badge-pending">28/60 Submitted</span>
+                        </div>
+                        <button class="btn btn-secondary">View Details</button>
+                    </div>
+                </div>
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-title">Binary Search Tree Implementation</div>
+                            <div class="assignment-subject">Data Structures - Dr. Priya Singh</div>
+                        </div>
+                        <div class="assignment-due completed">Completed</div>
+                    </div>
+                    <div class="assignment-description">
+                        Implement BST with insertion, deletion, and all traversal methods. Include time complexity analysis.
+                    </div>
+                    <div class="assignment-footer">
+                        <div>
+                            <span class="badge badge-present">60/60 Submitted</span>
+                        </div>
+                        <button class="btn btn-secondary">View Submissions</button>
+                    </div>
+                </div>
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-title">Software Engineering Case Study</div>
+                            <div class="assignment-subject">Software Engineering - Dr. Neha Gupta</div>
+                        </div>
+                        <div class="assignment-due">Due: Feb 8, 2026</div>
+                    </div>
+                    <div class="assignment-description">
+                        Analyze a real-world software project failure. Create SRS document, identify issues, and propose solutions using appropriate SDLC model.
+                    </div>
+                    <div class="assignment-footer">
+                        <div>
+                            <span class="badge badge-pending">8/60 Submitted</span>
+                        </div>
+                        <button class="btn btn-secondary">View Details</button>
+                    </div>
+                </div>
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-title">Computer Networks Lab Report</div>
+                            <div class="assignment-subject">Computer Networks - Prof. Suresh Patel</div>
+                        </div>
+                        <div class="assignment-due">Due: Feb 10, 2026</div>
+                    </div>
+                    <div class="assignment-description">
+                        Submit lab report covering socket programming experiments. Include code, output screenshots, and performance analysis.
+                    </div>
+                    <div class="assignment-footer">
+                        <div>
+                            <span class="badge badge-pending">5/60 Submitted</span>
+                        </div>
+                        <button class="btn btn-secondary">View Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timetable Tab -->
+        <div id="timetable" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Weekly Timetable - CSE 3nd Year</h2>
+                    <button class="btn btn-primary" onclick="openModal('updateTiming')">Update Schedule</button>
+                </div>
+
+                <div class="timetable">
+                    <div class="timetable-day">Monday</div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">09:00 - 09:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Data Structures</div>
+                            <div class="slot-faculty">Dr. Priya Singh <span class="slot-room">Room 301</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">10:00 - 10:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Database Management</div>
+                            <div class="slot-faculty">Prof. Amit Kumar <span class="slot-room">Room 205</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">11:00 - 11:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Operating Systems</div>
+                            <div class="slot-faculty">Dr. Rajesh Verma <span class="slot-room">Room 302</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">12:00 - 12:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Software Engineering</div>
+                            <div class="slot-faculty">Dr. Neha Gupta <span class="slot-room">Room 201</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot" style="background: var(--bg-hover);">
+                        <div class="slot-time">12:50 - 01:40</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">🍽️ LUNCH BREAK</div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">01:40 - 03:30</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">DBMS Lab</div>
+                            <div class="slot-faculty">Prof. Amit Kumar <span class="slot-room">Lab 2</span></div>
+                        </div>
+                    </div>
+
+                    <div class="timetable-day">Tuesday</div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">09:00 - 09:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Computer Networks</div>
+                            <div class="slot-faculty">Prof. Suresh Patel <span class="slot-room">Room 303</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">10:00 - 10:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Operating Systems</div>
+                            <div class="slot-faculty">Dr. Rajesh Verma <span class="slot-room">Room 302</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">11:00 - 11:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Data Structures</div>
+                            <div class="slot-faculty">Dr. Priya Singh <span class="slot-room">Room 301</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">12:00 - 12:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Mathematics-III</div>
+                            <div class="slot-faculty">Prof. Anita Sharma <span class="slot-room">Room 104</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot" style="background: var(--bg-hover);">
+                        <div class="slot-time">12:50 - 01:40</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">🍽️ LUNCH BREAK</div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">01:40 - 03:30</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Data Structures Lab</div>
+                            <div class="slot-faculty">Dr. Priya Singh <span class="slot-room">Lab 1</span></div>
+                        </div>
+                    </div>
+
+                    <div class="timetable-day">Wednesday</div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">09:00 - 09:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Software Engineering</div>
+                            <div class="slot-faculty">Dr. Neha Gupta <span class="slot-room">Room 201</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">10:00 - 10:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Database Management</div>
+                            <div class="slot-faculty">Prof. Amit Kumar <span class="slot-room">Room 205</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">11:00 - 11:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Computer Networks</div>
+                            <div class="slot-faculty">Prof. Suresh Patel <span class="slot-room">Room 303</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">12:00 - 12:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Operating Systems</div>
+                            <div class="slot-faculty">Dr. Rajesh Verma <span class="slot-room">Room 302</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot" style="background: var(--bg-hover);">
+                        <div class="slot-time">12:50 - 01:40</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">🍽️ LUNCH BREAK</div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">01:40 - 03:30</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">OS Lab</div>
+                            <div class="slot-faculty">Dr. Rajesh Verma <span class="slot-room">Lab 3</span></div>
+                        </div>
+                    </div>
+
+                    <div class="timetable-day">Thursday</div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">09:00 - 09:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Mathematics-III</div>
+                            <div class="slot-faculty">Prof. Anita Sharma <span class="slot-room">Room 104</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">10:00 - 10:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Data Structures</div>
+                            <div class="slot-faculty">Dr. Priya Singh <span class="slot-room">Room 301</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">11:00 - 11:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Software Engineering</div>
+                            <div class="slot-faculty">Dr. Neha Gupta <span class="slot-room">Room 201</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">12:00 - 12:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Database Management</div>
+                            <div class="slot-faculty">Prof. Amit Kumar <span class="slot-room">Room 205</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot" style="background: var(--bg-hover);">
+                        <div class="slot-time">12:50 - 01:40</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">🍽️ LUNCH BREAK</div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">01:40 - 03:30</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Computer Networks Lab</div>
+                            <div class="slot-faculty">Prof. Suresh Patel <span class="slot-room">Lab 4</span></div>
+                        </div>
+                    </div>
+
+                    <div class="timetable-day">Friday</div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">09:00 - 09:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Operating Systems</div>
+                            <div class="slot-faculty">Dr. Rajesh Verma <span class="slot-room">Room 302</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">10:00 - 10:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Computer Networks</div>
+                            <div class="slot-faculty">Prof. Suresh Patel <span class="slot-room">Room 303</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">11:00 - 11:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Mathematics-III</div>
+                            <div class="slot-faculty">Prof. Anita Sharma <span class="slot-room">Room 104</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">12:00 - 12:50</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Technical Communication</div>
+                            <div class="slot-faculty">Prof. Kavita Rao <span class="slot-room">Room 102</span></div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot" style="background: var(--bg-hover);">
+                        <div class="slot-time">12:50 - 01:40</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">🍽️ LUNCH BREAK</div>
+                        </div>
+                    </div>
+                    <div class="timetable-slot">
+                        <div class="slot-time">01:40 - 03:30</div>
+                        <div class="slot-details">
+                            <div class="slot-subject">Software Engineering Lab</div>
+                            <div class="slot-faculty">Dr. Neha Gupta <span class="slot-room">Lab 2</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Tab -->
+        <div id="attendance" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Attendance Management</h2>
+                    <button class="btn btn-primary" onclick="markAttendance()">Mark Today's Attendance</button>
+                </div>
+
+                <h3 style="margin-bottom: 15px; font-size: 1.3rem;">Subject-wise Attendance Overview</h3>
+
+                <div class="attendance-progress">
+                    <div class="progress-header">
+                        <span style="font-weight: 600;">Data Structures</span>
+                        <span style="font-weight: 700; color: var(--success);">92%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 92%;"></div>
+                    </div>
+                </div>
+
+                <div class="attendance-progress">
+                    <div class="progress-header">
+                        <span style="font-weight: 600;">Database Management</span>
+                        <span style="font-weight: 700; color: var(--success);">88%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 88%;"></div>
+                    </div>
+                </div>
+
+                <div class="attendance-progress">
+                    <div class="progress-header">
+                        <span style="font-weight: 600;">Operating Systems</span>
+                        <span style="font-weight: 700; color: var(--success);">85%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%;"></div>
+                    </div>
+                </div>
+
+                <div class="attendance-progress">
+                    <div class="progress-header">
+                        <span style="font-weight: 600;">Computer Networks</span>
+                        <span style="font-weight: 700; color: var(--success);">90%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 90%;"></div>
+                    </div>
+                </div>
+
+                <div class="attendance-progress">
+                    <div class="progress-header">
+                        <span style="font-weight: 600;">Software Engineering</span>
+                        <span style="font-weight: 700; color: var(--warning);">78%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 78%; background: var(--warning);"></div>
+                    </div>
+                </div>
+
+                <div class="attendance-progress">
+                    <div class="progress-header">
+                        <span style="font-weight: 600;">Mathematics-III</span>
+                        <span style="font-weight: 700; color: var(--success);">94%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 94%;"></div>
+                    </div>
+                </div>
+
+                <h3 style="margin: 30px 0 15px; font-size: 1.3rem;">Students with Low Attendance (Below 75%)</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Roll No</th>
+                                <th>Student Name</th>
+                                <th>Overall %</th>
+                                <th>Critical Subject</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2201001</td>
+                                <td>Aarav Patel</td>
+                                <td><span class="badge badge-absent">68%</span></td>
+                                <td>Software Engineering (62%)</td>
+                                <td><button class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem;">Send Alert</button></td>
+                            </tr>
+                            <tr>
+                                <td>2201015</td>
+                                <td>Ananya Verma</td>
+                                <td><span class="badge badge-absent">72%</span></td>
+                                <td>Operating Systems (70%)</td>
+                                <td><button class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem;">Send Alert</button></td>
+                            </tr>
+                            <tr>
+                                <td>2201032</td>
+                                <td>Rohan Gupta</td>
+                                <td><span class="badge badge-absent">71%</span></td>
+                                <td>DBMS (68%)</td>
+                                <td><button class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem;">Send Alert</button></td>
+                            </tr>
+                            <tr>
+                                <td>2201048</td>
+                                <td>Priya Sharma</td>
+                                <td><span class="badge badge-absent">74%</span></td>
+                                <td>Computer Networks (73%)</td>
+                                <td><button class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem;">Send Alert</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- CR Tasks Tab -->
+        <div id="cr-tasks" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Class Representative Tasks</h2>
+                </div>
+
+                <h3 style="margin-bottom: 15px; font-size: 1.3rem;">Pending Tasks</h3>
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-title">Collect Assignment Submissions</div>
+                            <div class="assignment-subject">DBMS - Due Feb 5</div>
+                        </div>
+                        <div class="assignment-due">Priority: High</div>
+                    </div>
+                    <div class="assignment-description">
+                        Collect hard copies of DBMS assignment from all students and submit to Prof. Amit Kumar's office.
+                    </div>
+                    <div class="assignment-footer">
+                        <div>
+                            <span class="badge badge-pending">28/60 Collected</span>
+                        </div>
+                        <button class="btn btn-success">Mark Complete</button>
+                    </div>
+                </div>
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-title">Update Faculty About Class Strength</div>
+                            <div class="assignment-subject">Monthly Report</div>
+                        </div>
+                        <div class="assignment-due">Priority: Medium</div>
+                    </div>
+                    <div class="assignment-description">
+                        Prepare and submit monthly attendance report to class coordinator. Include subject-wise breakdown and students below 75%.
+                    </div>
+                    <div class="assignment-footer">
+                        <div>
+                            <span class="badge badge-pending">In Progress</span>
+                        </div>
+                        <button class="btn btn-success">Mark Complete</button>
+                    </div>
+                </div>
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-title">Organize Industrial Visit</div>
+                            <div class="assignment-subject">Upcoming Event - Feb 10</div>
+                        </div>
+                        <div class="assignment-due">Priority: High</div>
+                    </div>
+                    <div class="assignment-description">
+                        Coordinate with TCS for industrial visit. Collect consent forms from students, arrange transportation, and brief students about dress code and guidelines.
+                    </div>
+                    <div class="assignment-footer">
+                        <div>
+                            <span class="badge badge-pending">45/60 Registrations</span>
+                        </div>
+                        <button class="btn btn-secondary">View Details</button>
+                    </div>
+                </div>
+
+                <h3 style="margin: 30px 0 15px; font-size: 1.3rem;">Completed Tasks</h3>
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-title">Communicate Exam Schedule</div>
+                            <div class="assignment-subject">Mid-Semester Exams</div>
+                        </div>
+                        <div class="assignment-due completed">Completed</div>
+                    </div>
+                    <div class="assignment-description">
+                        Informed all students about mid-semester exam schedule via WhatsApp group and class notification.
+                    </div>
+                </div>
+
+                <div class="assignment-card">
+                    <div class="assignment-header">
+                        <div>
+                            <div class="assignment-title">Collect Feedback Forms</div>
+                            <div class="assignment-subject">Faculty Feedback - Semester 3</div>
+                        </div>
+                        <div class="assignment-due completed">Completed</div>
+                    </div>
+                    <div class="assignment-description">
+                        Collected faculty feedback forms from all 60 students and submitted to HOD office.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+
+    <!-- Add Notification Modal -->
+    <div id="addNotification" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Post New Notification</h2>
+                <button class="close-modal" onclick="closeModal('addNotification')">&times;</button>
+            </div>
+            <form>
+                <div class="form-group">
+                    <label>Notification Title *</label>
+                    <input type="text" class="form-control" placeholder="e.g., Class Cancelled Tomorrow" required>
+                </div>
+                <div class="form-group">
+                    <label>Message *</label>
+                    <textarea class="form-control" placeholder="Enter notification details..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select class="form-control">
+                        <option>Normal</option>
+                        <option>Important</option>
+                        <option>Urgent</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Post Notification</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addNotification')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Assignment Modal -->
+    <div id="addAssignment" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add New Assignment</h2>
+                <button class="close-modal" onclick="closeModal('addAssignment')">&times;</button>
+            </div>
+            <form>
+                <div class="form-group">
+                    <label>Assignment Title *</label>
+                    <input type="text" class="form-control" placeholder="e.g., Binary Search Tree Implementation" required>
+                </div>
+                <div class="form-group">
+                    <label>Subject *</label>
+                    <select class="form-control" required>
+                        <option value="">Select Subject</option>
+                        <option>Data Structures</option>
+                        <option>Database Management</option>
+                        <option>Operating Systems</option>
+                        <option>Computer Networks</option>
+                        <option>Software Engineering</option>
+                        <option>Mathematics-III</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Faculty Name *</label>
+                    <input type="text" class="form-control" placeholder="e.g., Dr. Priya Singh" required>
+                </div>
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea class="form-control" placeholder="Assignment details and requirements..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Due Date *</label>
+                    <input type="date" class="form-control" required>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Add Assignment</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addAssignment')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Update Timing Modal -->
+    <div id="updateTiming" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Update Class Timing</h2>
+                <button class="close-modal" onclick="closeModal('updateTiming')">&times;</button>
+            </div>
+            <form>
+                <div class="form-group">
+                    <label>Select Day *</label>
+                    <select class="form-control" required>
+                        <option value="">Choose Day</option>
+                        <option>Monday</option>
+                        <option>Tuesday</option>
+                        <option>Wednesday</option>
+                        <option>Thursday</option>
+                        <option>Friday</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Time Slot *</label>
+                    <select class="form-control" required>
+                        <option value="">Select Time</option>
+                        <option>09:00 - 09:50</option>
+                        <option>10:00 - 10:50</option>
+                        <option>11:00 - 11:50</option>
+                        <option>12:00 - 12:50</option>
+                        <option>01:40 - 03:30</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Subject *</label>
+                    <input type="text" class="form-control" placeholder="e.g., Data Structures" required>
+                </div>
+                <div class="form-group">
+                    <label>Faculty Name *</label>
+                    <input type="text" class="form-control" placeholder="e.g., Dr. Priya Singh" required>
+                </div>
+                <div class="form-group">
+                    <label>Room/Lab *</label>
+                    <input type="text" class="form-control" placeholder="e.g., Room 301 or Lab 1" required>
+                </div>
+                <div class="form-group">
+                    <label>Reason for Change</label>
+                    <textarea class="form-control" placeholder="Optional: Explain why timing is being updated"></textarea>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Update Timing</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('updateTiming')">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => btn.classList.remove('active'));
+
+            const selectedTab = document.getElementById(tabName);
+            if (selectedTab) {
+                selectedTab.classList.add('active');
+            }
+
+            const activeBtn = Array.from(navBtns).find(btn =>
+                btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabName)
+            );
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.remove('active');
+        }
+
+        window.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        });
+
+        function markAttendance() {
+            alert("Attendance marking feature would open here. This would allow CR to mark present/absent for each student for today's classes.");
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationItems = document.querySelectorAll('.notification-item');
+            notificationItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    this.classList.remove('unread');
+                    updateNotificationBadge();
+                });
+            });
+
+            updateNotificationBadge();
+        });
+
+        function updateNotificationBadge() {
+            const unreadCount = document.querySelectorAll('.notification-item.unread').length;
+            const badge = document.querySelector('.nav-btn .badge');
+            if (badge) {
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const activeModal = document.querySelector('.modal.active');
+                if (activeModal) {
+                    activeModal.classList.remove('active');
+                }
+            }
+        });
+
+        const addNotificationForm = document.querySelector('#addNotification form');
+        if (addNotificationForm) {
+            addNotificationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const title = this.querySelector('input[type="text"]').value.trim();
+                const message = this.querySelector('textarea').value.trim();
+                const priority = this.querySelector('select').value;
+
+                if (title && message) {
+                    addNotificationToPage(title, message, priority);
+                    alert('Notification posted successfully!');
+                    this.reset();
+                    closeModal('addNotification');
+                }
+            });
+        }
+
+        const addAssignmentForm = document.querySelector('#addAssignment form');
+        if (addAssignmentForm) {
+            addAssignmentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const title = this.querySelector('input[type="text"]').value.trim();
+                const subject = this.querySelector('select').value;
+                const faculty = this.querySelectorAll('input[type="text"]')[1].value.trim();
+                const description = this.querySelector('textarea').value.trim();
+                const dueDate = this.querySelector('input[type="date"]').value;
+
+                if (title && subject && faculty && description && dueDate) {
+                    console.log('New Assignment:', { title, subject, faculty, description, dueDate });
+                    alert('Assignment added successfully!');
+                    this.reset();
+                    closeModal('addAssignment');
+                }
+            });
+        }
+
+        const updateTimingForm = document.querySelector('#updateTiming form');
+        if (updateTimingForm) {
+            updateTimingForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const day = this.querySelectorAll('select')[0].value;
+                const timeSlot = this.querySelectorAll('select')[1].value;
+                const subject = this.querySelector('input[type="text"]').value.trim();
+                const faculty = this.querySelectorAll('input[type="text"]')[1].value.trim();
+                const room = this.querySelectorAll('input[type="text"]')[2].value.trim();
+                const reason = this.querySelector('textarea').value.trim();
+
+                if (day && timeSlot && subject && faculty && room) {
+                    console.log('Update Timing:', { day, timeSlot, subject, faculty, room, reason });
+                    alert('Timing updated successfully!');
+                    this.reset();
+                    closeModal('updateTiming');
+                }
+            });
+        }
+
+        function addNotificationToPage(title, message, priority) {
+            const notificationsTab = document.querySelector('#notifications .card');
+            if (!notificationsTab) return;
+
+            const notificationItem = document.createElement('div');
+            notificationItem.className = 'notification-item unread';
+
+            let icon = '📢';
+            if (priority === 'Important') icon = '⚠️';
+            if (priority === 'Urgent') icon = '🚨';
+
+            notificationItem.innerHTML = `
+                <div class="notification-content">
+                    <h4>${icon} ${title}</h4>
+                    <p>${message}</p>
+                    <div class="notification-time">Posted by CR - Just now</div>
+                </div>
+            `;
+
+            const firstNotification = notificationsTab.querySelector('.notification-item');
+            if (firstNotification) {
+                firstNotification.parentNode.insertBefore(notificationItem, firstNotification);
+            } else {
+                notificationsTab.appendChild(notificationItem);
+            }
+
+            notificationItem.addEventListener('click', function() {
+                this.classList.remove('unread');
+                updateNotificationBadge();
+            });
+
+            updateNotificationBadge();
+        }
+
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.textContent === 'Send Alert') {
+                const row = e.target.closest('tr');
+                if (row) {
+                    const studentName = row.querySelector('td:nth-child(2)').textContent;
+                    if (confirm(`Send attendance alert to ${studentName}?`)) {
+                        alert(`Alert sent to ${studentName} successfully!`);
+                        e.target.textContent = 'Alert Sent';
+                        e.target.disabled = true;
+                        e.target.style.opacity = '0.6';
+                        e.target.style.cursor = 'not-allowed';
+                    }
+                }
+            }
+
+            if (e.target && e.target.textContent === 'Mark Complete') {
+                const card = e.target.closest('.assignment-card');
+                if (card) {
+                    const taskTitle = card.querySelector('.assignment-title').textContent;
+                    if (confirm(`Mark "${taskTitle}" as complete?`)) {
+                        const dueBadge = card.querySelector('.assignment-due');
+                        if (dueBadge) {
+                            dueBadge.textContent = 'Completed';
+                            dueBadge.classList.add('completed');
+                        }
+
+                        e.target.textContent = 'Completed';
+                        e.target.classList.remove('btn-success');
+                        e.target.classList.add('btn-secondary');
+                        e.target.disabled = true;
+                        e.target.style.opacity = '0.6';
+                        e.target.style.cursor = 'not-allowed';
+
+                        alert('Task marked as complete!');
+                    }
+                }
+            }
+        });
+
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '0';
+            setTimeout(function() {
+                document.body.style.transition = 'opacity 0.5s ease';
+                document.body.style.opacity = '1';
+            }, 100);
+        });
+
+        console.log('%c🎓 ClassHub - Class Management System', 'color: #667eea; font-size: 20px; font-weight: bold;');
+        console.log('%cWelcome to the Class Management System!', 'color: #764ba2; font-size: 14px;');
+        console.log('%cDeveloped for CSE 2nd Year Mini Project', 'color: #94a3b8; font-size: 12px;');
+
+        const ClassHub = {
+            saveData: function(key, data) {
+                try {
+                    localStorage.setItem(key, JSON.stringify(data));
+                    return true;
+                } catch (e) {
+                    console.error(e);
+                    return false;
+                }
+            },
+            getData: function(key) {
+                try {
+                    const data = localStorage.getItem(key);
+                    return data ? JSON.parse(data) : null;
+                } catch (e) {
+                    console.error(e);
+                    return null;
+                }
+            },
+            removeData: function(key) {
+                try {
+                    localStorage.removeItem(key);
+                    return true;
+                } catch (e) {
+                    console.error(e);
+                    return false;
+                }
+            },
+            clearAll: function() {
+                try {
+                    localStorage.clear();
+                    return true;
+                } catch (e) {
+                    console.error(e);
+                    return false;
+                }
+            }
+        };
+
+        if (typeof module !== 'undefined' && module.exports) {
+            module.exports = ClassHub;
+        }
+    </script>
+</body>
+</html>
